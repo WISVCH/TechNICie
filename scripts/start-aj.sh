@@ -10,6 +10,8 @@ if [ "$DNS_HOSTNAME" != "$CUR_HOSTNAME" ]; then
 	hostname $DNS_HOSTNAME
 	sed -i "s/$CUR_HOSTNAME/$DNS_HOSTNAME/g" /etc/hosts
 	echo "Changed hostname"
+	reboot
+	exit
 else
 	echo "Hostname $CUR_HOSTNAME is correct"
 fi
