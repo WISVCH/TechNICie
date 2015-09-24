@@ -235,7 +235,7 @@ function check_team {
 	echo
 	echo "== SSH check =="
 	check_ssh "$SSH_KEY_JORAI"
-	check_ssh "$SSK_KEY_SILLE"
+	check_ssh "$SSH_KEY_SILLE"
 }
 
 # Check an autojudge
@@ -256,7 +256,7 @@ function check_aj {
 	echo
 	echo "== SSH check =="
 	check_ssh "$SSH_KEY_JORAI"
-	check_ssh "$SSK_KEY_SILLE"
+	check_ssh "$SSH_KEY_SILLE"
 }
 
 if [ "$COMP" == "team" ]; then
