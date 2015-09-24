@@ -9,9 +9,8 @@ PKG_OTHERS="cups-bsd konsole make cmake gdb valgrind kcachegrind perl git screen
 CONTEST_HOSTS="chipcie.ch.tudelft.nl"
 
 JAVA_VERSION="1\.8.*"
-SSH_KEY_PETER="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDbWqYxep0Z4BUuEnkYbfbrduBncK7xqwh1PzR4p/kiBGFFbuj0Q8hFf4nDPS6aFdkjSnkiuvEsgP3Q+4+XxLFq00B/nb74C9he8UaVhOwLfLSBkP6ZC7OHHyQXDPj+tLlSmwtax2lLOo/W13ZoOJDl0U5eWUQ/3+oVmqpc0CmPCEVuceXAinM9VNgczdgLiDstOEkhHCKN3BFDy142MT+tkMp+2Qi8tkN7Z5RaihED4gK0iKffPrvQzIQcEP2tyRzf/BpqjPPsCOiIbvBAyqe18byI9+BTEoiLKmCclnVCxLfedDjAk/AOK86Tl5MTz15tIcZ6tV7seV9uIvSPIwNUb5xS4SKIFM9pv3CYMcFycKw923XFta1tbcGJMhv5P8XnQDnpMQpWrgoyH194QlVLOEGsJ1jfsfslcmoywhqgZSO2CTxcLOy9Lf995h4dw5MbZDj1BcPIrJV8RtJUsMjmLtV8EBMJa5Vx3i1v9JfIiT1O9yMaF2SQUEiSokTmyIASEqBkPu8Jtdps1x/qotx6fbj+YKp6itDt6ElmIiv5k6vck7a2Mehd7eEQIEI4rY3n+nO18VnoH+AO+DtKmjq2n1LhD7KqGtNg+nPbXH/e2ibKHZ4Z+0dvNjz/1F2Zbh8S/VigemVr4BCvjSrffoiwLx9jB3OYuZYcOASLSoaaVw== root@peter"
-SSK_KEY_FREEK="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC4/lobUfwS80++GxSvO2eRBRRa8W6p5tkelpmDaA39OksDAkBo3mBNfdDuVglF0psU0dS6wrOvg7zua23k1/PnSNehf0AQEFVl2bSj/9Lo72yLy6fMWP2yy0RyBws8Co9q26BPmcKoflsURfRRguLZgHAIFFdnevObvbSt/pkRGVBiHs9XC4fAJwAX/eVwhyaWrHHdablIQ1S3T/mtsBY5gI/j/HsuFBm0zQrOgSxgHIogn62rwgT0zhI/ShEh0FzDxnFayV3P0GEef7PmRPAeXSQcoZYFVs6hkzby9dBjsu9sR3oPRvTAShLpvi6ZeZUPJNl26KLRtjwJogxysSfzWD6icCeAwJQ2w07Wkqd74sz+Omm+Y6PbbRJZGk3ruLYOqGELhG0vtL4ReBlVEJtLED3L0DI/RBF73ShEAqEAadJGvC4AtcVnx+eYRF3aGT1kVAUJ6Aj+HGACuGA8ET01MePNfIpzbS9ay+s2rbdH549mgOnSv3HwFu9G0qWZE3SmYR1TJFH/3IoAakD3g61B7KgyDcDcLCXlvSP/1kDmebYzXHPmFdFC/Zv6n8Z7MFl1vJPP6DFiDWM79ie874ZR7z8JTWi6XpGlwURV7/sLtZHWCU5gKHSjDrmSG2YtAAwBlfJe+2pm0xvS8dLkQLlRPt9kG/uBo/N2mbOxCY+1BQ== freaky@ubuntu"
-
+SSH_KEY_JORAI="ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAr4Z4mZu7Xi4rfZvPsLbeGUtZC8eqLxgTNjR38zFB539diSS1WliQ/ipSjAdNhUkI5mFZVOPMpVOMDFR8H+0cKEBkFZ3qyBvRjMMOhA7QPFT3HfS1V9JJSeddvejOeuNNK8DrLE9OY4ppBewi0DdVFaZVEe3DRqvh12NTXnGQ9VSMkwPtaHworhVnpPIx/jq/ioQaQQn4pJ6OQZXiFEFjKHNvGJXeJXG4dtr7mF+nJ1sscPBNB0pDiaMWqukmnUyGxEXtPazJBilw+sXPQKziPLa8sBG6rBDOGG0I3qbdw+xE7lWJ5sa1wuSWSYuEMnyYV5JahshDn9l6PqKVV7t/pw== Jorai@JORAI-PC"
+SSH_KEY_SILLE="ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAzfYEI0tgnKWivI14XmRi9eKhrPznJE8kCMH9iCPEBDj/Q2JW6LgFuyNKaPdgW/fGD2ac0TWbeVzUqS4SgZ/J7HJyMcIkV7xGwcvzlzChAj6nFe+npijVzELj8XyXfNqs8RL9iqyudJjIqqWdW5vDDOmGfbEY9pM5eHpeQhol00mRupcp6TTgCuuAdx2wzCkDVNmbAeYtUPmlu7uINPLJGl6eZBia7sH7LwL1WoSPEyG46yud43U2QKEhohXLD60n9BxMolbCh90KveCDqMgroaTIEkcldOI3efkSdjcfkT7QWW3LHTqPaMuNsQva2Gef42GtBvbd6F/FYqqXLcwgqw== sille.kamoen@gmail.com"
 
 # HIER BEGINT HET SCRIPT
 PKG_MISSING=""
@@ -24,10 +23,6 @@ echo "████████╗███████╗ ██████╗�
    ██║   ███████╗╚██████╗██║  ██║██║ ╚████║██║╚██████╗██║███████╗
    ╚═╝   ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝ ╚═════╝╚═╝╚══════╝"
 echo "Supergaafe auto checking script"
-
-#if [ -z "$SERVER_IP" ]; then
-#	SERVER_IP=`getent hosts chipcie.ch.tudelft.nl | cut -d' ' -f1`
-#fi
 
 if [ -z "$1" ]; then
 	COMP="team"
@@ -239,8 +234,8 @@ function check_team {
 
 	echo
 	echo "== SSH check =="
-	check_ssh "$SSH_KEY_PETER"
-	check_ssh "$SSK_KEY_FREEK"
+	check_ssh "$SSH_KEY_JORAI"
+	check_ssh "$SSK_KEY_SILLE"
 }
 
 # Check an autojudge
@@ -253,7 +248,6 @@ function check_aj {
 	echo "== Check internet =="
 	check_udev
 	check_network
-	check_contest_hosts $CONTEST_HOSTS
 
 	echo
 	echo "== Java check =="
@@ -261,8 +255,8 @@ function check_aj {
 
 	echo
 	echo "== SSH check =="
-	check_ssh "$SSH_KEY_PETER"
-	check_ssh "$SSK_KEY_FREEK"
+	check_ssh "$SSH_KEY_JORAI"
+	check_ssh "$SSK_KEY_SILLE"
 }
 
 if [ "$COMP" == "team" ]; then
