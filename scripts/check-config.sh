@@ -10,7 +10,7 @@ CONTEST_HOSTS="chipcie.ch.tudelft.nl"
 
 JAVA_VERSION="1\.8.*"
 SSH_KEY_JORAI="ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAr4Z4mZu7Xi4rfZvPsLbeGUtZC8eqLxgTNjR38zFB539diSS1WliQ/ipSjAdNhUkI5mFZVOPMpVOMDFR8H+0cKEBkFZ3qyBvRjMMOhA7QPFT3HfS1V9JJSeddvejOeuNNK8DrLE9OY4ppBewi0DdVFaZVEe3DRqvh12NTXnGQ9VSMkwPtaHworhVnpPIx/jq/ioQaQQn4pJ6OQZXiFEFjKHNvGJXeJXG4dtr7mF+nJ1sscPBNB0pDiaMWqukmnUyGxEXtPazJBilw+sXPQKziPLa8sBG6rBDOGG0I3qbdw+xE7lWJ5sa1wuSWSYuEMnyYV5JahshDn9l6PqKVV7t/pw== Jorai@JORAI-PC"
-SSH_KEY_SILLE="ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAzfYEI0tgnKWivI14XmRi9eKhrPznJE8kCMH9iCPEBDj/Q2JW6LgFuyNKaPdgW/fGD2ac0TWbeVzUqS4SgZ/J7HJyMcIkV7xGwcvzlzChAj6nFe+npijVzELj8XyXfNqs8RL9iqyudJjIqqWdW5vDDOmGfbEY9pM5eHpeQhol00mRupcp6TTgCuuAdx2wzCkDVNmbAeYtUPmlu7uINPLJGl6eZBia7sH7LwL1WoSPEyG46yud43U2QKEhohXLD60n9BxMolbCh90KveCDqMgroaTIEkcldOI3efkSdjcfkT7QWW3LHTqPaMuNsQva2Gef42GtBvbd6F/FYqqXLcwgqw== sille.kamoen@gmail.com"
+SSH_KEY_WIM="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCsi3m+Ssu6zWoSceAsUe/zJF0EvUsNh/7QpQ8bCIyCHPz5ocmOn2qVOy10iV3bVVFAoW6nSUwmxdtVtuu/Z3JEztMzLmQIqQfJARBoVRsgaiYezP2PaFGH+XIU7d5ISFMFA2XlHcCTDhArMb551yag/suwFFXle9+3Myal2W4/iIe0nPBelnQ3GeDIzZYETxIQYrsjxxB5FGAfqzzPMVLW+p6AKFDriL/nrfNcMoXi+KqfsluuSq8YHhq+dkqPuFronToLAWyyHFr5krhLepkxFyuRuUYSkUaqDrsLxqm9dMRvQdSCDJQIMyPMPfK3GdoHMhN+sq/mkpbQC1iPvGd1XHxyQ+OJGobBc4H74oethqh8GHABuli3pa8kO/NikJQ4EhkO4XeGp179bj+ZKJ3Z1lshGzpdk18dGqv2MMbWGprUV3QlS1yWVhiVY6yFLzQyO/EoZFOBp8RDCnBckZGMEyZbMZaMPUwEOGD5xQI1Z1hdB8gdTLOnw5e9tb2W+N1DtKj9oCg08+I8z/apODopdcmFS6cIF+z7NSg9me3yT7uJIyhs6w9d0nUvbc7hxvOH0ebBYTrlDYujhqq556aDjRCneSyVI0aLkZrdtHVWBr6d4LZMr487pLsNV/nXhKF7CqvrYlFDrhewntnLyHmaUrNkmvrSCFisPxtcUCxjfw== wimw@ch.tudelft.nl"
 
 # HIER BEGINT HET SCRIPT
 PKG_MISSING=""
@@ -235,7 +235,7 @@ function check_team {
 	echo
 	echo "== SSH check =="
 	check_ssh "$SSH_KEY_JORAI"
-	check_ssh "$SSH_KEY_SILLE"
+	check_ssh "$SSH_KEY_WIM"
 }
 
 # Check an autojudge
@@ -256,7 +256,7 @@ function check_aj {
 	echo
 	echo "== SSH check =="
 	check_ssh "$SSH_KEY_JORAI"
-	check_ssh "$SSH_KEY_SILLE"
+	check_ssh "$SSH_KEY_WIM"
 }
 
 if [ "$COMP" == "team" ]; then
