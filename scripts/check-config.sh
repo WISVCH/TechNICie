@@ -1,9 +1,14 @@
 #!/bin/bash
 
-PKG_WINDOW_MANAGERS="gnome-shell xfce4 kde-plasma-desktop"
-PKG_COMPILERS="gcc g++ oracle-java8-installer scala python2.7 python3 mono-devel haskell-platform libghc-*-dev"
-PKG_EDITORS="emacs vim eclipse netbeans nano kate gedit geany kwrite kdevelop codeblocks joe"
-PKG_OTHERS="cups-bsd konsole make cmake gdb valgrind kcachegrind perl git screen galculator"
+PKG_WINDOW_MANAGERS="gnome-shell xfce4 plasma-desktop"
+PKG_COMPILERS="gcc g++ openjdk-8-jdk scala python2.7 python3 mono-devel haskell-platform libghc-*-dev"
+PKG_EDITORS="emacs vim netbeans monodevelop nano kate gedit geany kwrite kdevelop codeblocks joe"
+PKG_OTHERS="cups-bsd konsole make cmake kdbg gdb valgrind kcachegrind perl git screen galculator sdb"
+OPT_PROGS_NAMES="Sublime Text 3:IntelliJ IDEA:Eclipse"
+OPT_PROGS_BINARY="subl:intellij:eclipse"
+OPT_PROGS_COMMAND="subl:bin/idea.sh:eclipse"
+OPT_PROGS_VERSION_COMMANDS="subl --version | grep -oP 'Build \d+$':cat /opt/intellij/build.txt:grep -oP '(?<=version=)[\d.]+' /opt/eclipse/.eclipseproduct"
+
 
 # CONTEST_HOSTS are hosts that should be in /etc/hosts
 CONTEST_HOSTS="chipcie.ch.tudelft.nl"
@@ -15,6 +20,7 @@ SSH_KEY_WIM="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCsi3m+Ssu6zWoSceAsUe/zJF0EvUs
 # HIER BEGINT HET SCRIPT
 PKG_MISSING=""
 EXECUTE_CMD=""
+PACKAGE_SEARCH=""
 clear
 echo "████████╗███████╗ ██████╗██╗  ██╗███╗   ██╗██╗ ██████╗██╗███████╗
 ╚══██╔══╝██╔════╝██╔════╝██║  ██║████╗  ██║██║██╔════╝██║██╔════╝
@@ -172,7 +178,7 @@ function check_ssh {
 	if [ -f /root/.ssh/authorized_keys ]; then
 		if [ -s $(grep "$@" /root/.ssh/authorized_keys 2>&1 > /dev/null) ]; then
 			SSH_KEY_NAME=$(echo "$@" | cut -d' ' -f3)
-			echo "Succesfully set $SSH_KEY_NAME SSH key"
+			echo "Successfully set $SSH_KEY_NAME SSH key"
 		else
 			echo "[ERROR] No SSH key set!"
 			EXECUTE_CMD+="echo \"$@\" >> /root/.ssh/authorized_keys\n"
@@ -183,18 +189,44 @@ function check_ssh {
 	fi
 }
 
-# Check if sublime 3 is installed
-function check_sublime_3 {
-	if [ -f $(which subl) ]; then
-		SUBLIME_VERSION=$(subl --version | cut -d' ' -f4)
-		echo "sublime 3: $SUBLIME_VERSION"
+# Check custom installed programs in the opt dir
+# $1: packages names
+# $2: package symlink names
+# $3: package executable names
+# $4: version check commands
+function check_custom_opt_programs {
+	# Set delimiter to : and backup previous delimiter
+	OIFS="$IFS"; IFS=":"
+
+	names=($1)
+	symlinks=($2)
+	executables=($3)
+	version_cmds=($4)
+	amount=${#names[@]}
+	for ((i=0; i<amount; i++)); do
+		check_custom_opt_program "${names[$i]}" "${symlinks[$i]}" "${executables[$i]}" "${version_cmds[$i]}"	
+	done
+
+	# Restore previous delimiter
+	IFS="$OIFS"
+}
+
+# Check custom installed package (/opt/<package-name>)
+# $1: package name
+# $2: package symlink name: /usr/local/bin/$2
+# $3: package executable name: /opt/$1/$3
+# $4: version check command
+function check_custom_opt_program {
+	if [ -f "$(which $2)" ]; then
+		PACKAGE_VERSION=$(eval $4)
+		echo "$1: $PACKAGE_VERSION"
 	else
-		if [ -f /opt/sublime_text_3/sublime_text ]; then
-			echo "[ERROR] sublime 3 not linked to /usr/bin/subl"
-			EXECUTE_CMD+="ln -s /opt/sublime_text_3/sublime_text /usr/bin/subl\n"
+		if [ -f /opt/$1/$3 ]; then
+			echo "[ERROR] $1 not linked to /usr/local/bin/$2"
+			EXECUTE_CMD+="ln -s /opt/$1/$3 /usr/local/bin/$2"
 		else
-			echo "[ERROR] sublime 3 is not installed"
-			EXECUTE_CMD+="wget http://c758482.r82.cf2.rackcdn.com/sublime_text_3_build_3065_x64.tar.bz2 && tar -xjvf sublime_text_3_build_3065_x64.tar.bz2 && mv sublime_text_3 /opt/ && ln -s /opt/sublime_text_3/sublime_text /bin/subl && rm -rf sublime_text_3_build_3065_x64.tar.bz2\n"
+			echo "[ERROR] $1 is not installed"
+			PACKAGE_SEARCH+="$1\n"
 		fi
 	fi
 }
@@ -212,11 +244,14 @@ function check_team {
 	echo
 	echo "=== Editors ==="
 	check_pkg_list $PKG_EDITORS
-	check_sublime_3
 
 	echo
 	echo "=== Others ==="
 	check_pkg_list $PKG_OTHERS
+
+	echo
+	echo "=== Opt Programs ==="
+	check_custom_opt_programs "$OPT_PROGS_NAMES" "$OPT_PROGS_BINARY" "$OPT_PROGS_COMMAND" "$OPT_PROGS_VERSION_COMMANDS"
 
 	echo
 	echo "== Check internet =="
@@ -275,4 +310,9 @@ fi
 
 if [[ $EXECUTE_CMD != "" ]]; then
 	echo -e $EXECUTE_CMD
+fi
+
+if [[ $PACKAGE_SEARCH != "" ]]; then
+	echo "== Download and install the following programs =="
+	echo -e $PACKAGE_SEARCH
 fi
