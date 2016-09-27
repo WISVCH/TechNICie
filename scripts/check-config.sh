@@ -3,7 +3,7 @@
 PKG_WINDOW_MANAGERS="gnome-shell xfce4 plasma-desktop"
 PKG_COMPILERS="gcc g++ openjdk-8-jdk scala python2.7 python3 mono-devel haskell-platform libghc-*-dev"
 PKG_EDITORS="emacs vim netbeans monodevelop nano kate gedit geany kwrite kdevelop codeblocks joe"
-PKG_OTHERS="cups-bsd konsole make cmake kdbg gdb valgrind kcachegrind perl git screen galculator sdb"
+PKG_OTHERS="cups-bsd konsole make cmake kdbg gdb valgrind kcachegrind perl git screen galculator sdb openssh-server"
 OPT_PROGS_NAMES="Sublime Text 3:IntelliJ IDEA:Eclipse"
 OPT_PROGS_BINARY="subl:intellij:eclipse"
 OPT_PROGS_COMMAND="subl:bin/idea.sh:eclipse"
@@ -85,25 +85,21 @@ function check_contest_hosts {
 	for host in $@
 	do
 		expected=$(dig +time=1 +short $host)
+		([[ "$?" -eq 0 ]] && offline=false) || offline=true
 		search_res=($(grep -P "^\s*[^#\s]+\s+$host\s*$" /etc/hosts))
-		offline=false
 
-		if [ -n $(grep "connection timed out" <<< "${search_res[*]}") ]; then
-			offline=true
-			expected="<insert ip>"
-		fi
 		if [[ $search_res ]]; then
 			if [ "${search_res[0]}" == "$expected" ] || [ "$offline" == true ]; then
 				echo "$host present in /etc/hosts as mapping to ${search_res[0]}"
 			else
 				echo "[ERROR] $host present in /etc/hosts, but as ${search_res[0]} instead of detected $expected"
 				search_format=$(echo "${search_res[*]}" | sed 's/\./\\./g' | sed 's/ /\\\\t/g')
-				EXECUTE_CMD+="sudo sed -i 's/$search_format/$expected\\\\t$host/g' /etc/hosts"
+				EXECUTE_CMD+="sudo sed -i 's/$search_format/$expected\\\\t$host/g' /etc/hosts\n"
 
 			fi
 		else
 			echo "[ERROR] $host missing from /etc/hosts"
-			[[ -z "$expected" ]] && expected="<insert ip>"
+			[ "$offline" == true ] && expected="<insert ip>"
 			EXECUTE_CMD+="echo -e \"\\\\n${expected}\\\\t${host}\" | sudo tee -a /etc/hosts\n"
 		fi		
 	done
@@ -138,7 +134,7 @@ function check_network {
 	if [[ $(grep -E "(auto|allow-hotplug) eth0" /etc/network/interfaces) ]]; then
 		echo "Network device eth0 is correctly installed"
 	else
-		EXECUTE_CMD+="echo -e \"\\\nauto eth0\\\niface eth0 inet dhcp\\\n\" >> /etc/network/interfaces"
+		EXECUTE_CMD+="echo -e \"\\\nauto eth0\\\niface eth0 inet dhcp\\\n\" >> /etc/network/interfaces\n"
 		echo "[ERROR] Network device eth0 is missing"
 	fi
 }
