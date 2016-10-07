@@ -4,7 +4,8 @@ PKG_WINDOW_MANAGERS="gnome-shell xfce4 plasma-desktop"
 PKG_COMPILERS="gcc g++ openjdk-8-jdk scala python2.7 python3 mono-devel haskell-platform libghc-*-dev"
 PKG_EDITORS="emacs vim netbeans monodevelop nano kate gedit geany kwrite kdevelop codeblocks joe"
 PKG_OTHERS="cups-bsd konsole make cmake kdbg gdb valgrind kcachegrind perl git screen galculator sdb openssh-server"
-OPT_PROGS_NAMES="Sublime Text 3:IntelliJ IDEA:Eclipse"
+OPT_PROGS_DISPLAY_NAMES="Sublime Text 3:IntelliJ IDEA:Eclipse"
+OPT_PROGS_NAMES="sublime_text:intellij:eclipse"
 OPT_PROGS_BINARY="subl:intellij:eclipse"
 OPT_PROGS_COMMAND="subl:bin/idea.sh:eclipse"
 OPT_PROGS_VERSION_COMMANDS="subl --version | grep -oP 'Build \d+$':cat /opt/intellij/build.txt:grep -oP '(?<=version=)[\d.]+' /opt/eclipse/.eclipseproduct"
@@ -190,6 +191,7 @@ function check_ssh {
 # $2: package symlink names
 # $3: package executable names
 # $4: version check commands
+# $5: package display names
 function check_custom_opt_programs {
 	# Set delimiter to : and backup previous delimiter
 	OIFS="$IFS"; IFS=":"
@@ -198,9 +200,10 @@ function check_custom_opt_programs {
 	symlinks=($2)
 	executables=($3)
 	version_cmds=($4)
+	display_names=($5)
 	amount=${#names[@]}
 	for ((i=0; i<amount; i++)); do
-		check_custom_opt_program "${names[$i]}" "${symlinks[$i]}" "${executables[$i]}" "${version_cmds[$i]}"	
+		check_custom_opt_program "${names[$i]}" "${symlinks[$i]}" "${executables[$i]}" "${version_cmds[$i]}" "${display_names[$i]}"
 	done
 
 	# Restore previous delimiter
@@ -212,17 +215,18 @@ function check_custom_opt_programs {
 # $2: package symlink name: /usr/local/bin/$2
 # $3: package executable name: /opt/$1/$3
 # $4: version check command
+# $5: package display name
 function check_custom_opt_program {
 	if [ -f "$(which $2)" ]; then
 		PACKAGE_VERSION=$(eval $4)
-		echo "$1: $PACKAGE_VERSION"
+		echo "$5: $PACKAGE_VERSION"
 	else
 		if [ -f /opt/$1/$3 ]; then
-			echo "[ERROR] $1 not linked to /usr/local/bin/$2"
-			EXECUTE_CMD+="ln -s /opt/$1/$3 /usr/local/bin/$2"
+			echo "[ERROR] $5 not linked to /usr/local/bin/$2"
+			EXECUTE_CMD+="ln -s /opt/$1/$3 /usr/local/bin/$2\n"
 		else
 			echo "[ERROR] $1 is not installed"
-			PACKAGE_SEARCH+="$1\n"
+			PACKAGE_SEARCH+="$5 into /opt/$1/\n"
 		fi
 	fi
 }
@@ -247,7 +251,7 @@ function check_team {
 
 	echo
 	echo "=== Opt Programs ==="
-	check_custom_opt_programs "$OPT_PROGS_NAMES" "$OPT_PROGS_BINARY" "$OPT_PROGS_COMMAND" "$OPT_PROGS_VERSION_COMMANDS"
+	check_custom_opt_programs "$OPT_PROGS_NAMES" "$OPT_PROGS_BINARY" "$OPT_PROGS_COMMAND" "$OPT_PROGS_VERSION_COMMANDS" "$OPT_PROGS_DISPLAY_NAMES"
 
 	echo
 	echo "== Check internet =="
