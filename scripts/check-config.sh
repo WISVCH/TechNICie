@@ -2,13 +2,14 @@
 
 PKG_WINDOW_MANAGERS="gnome-shell xfce4 plasma-desktop"
 PKG_COMPILERS="gcc g++ openjdk-8-jdk scala python2.7 python3 mono-devel haskell-platform libghc-*-dev"
-PKG_EDITORS="emacs vim netbeans monodevelop nano kate gedit geany kwrite kdevelop codeblocks joe"
-PKG_OTHERS="cups-bsd konsole make cmake kdbg gdb valgrind kcachegrind perl git screen galculator sdb openssh-server"
-OPT_PROGS_DISPLAY_NAMES="Sublime Text 3:IntelliJ IDEA:Eclipse"
-OPT_PROGS_NAMES="sublime_text:intellij:eclipse"
-OPT_PROGS_BINARY="subl:intellij:eclipse"
-OPT_PROGS_COMMAND="subl:bin/idea.sh:eclipse"
-OPT_PROGS_VERSION_COMMANDS="subl --version | grep -oP 'Build \d+$':cat /opt/intellij/build.txt:grep -oP '(?<=version=)[\d.]+' /opt/eclipse/.eclipseproduct"
+PKG_EDITORS="emacs vim netbeans monodevelop nano kate gedit geany kwrite kdevelop codeblocks joe sublime-text"
+PKG_OTHERS="dnsutils cups-bsd konsole make cmake kdbg gdb valgrind kcachegrind perl git screen galculator sdb openssh-server"
+OPT_PROGS_DISPLAY_NAMES="IntelliJ IDEA:Eclipse"
+OPT_PROGS_NAMES="intellij:eclipse"
+OPT_PROGS_BINARY="intellij:eclipse"
+OPT_PROGS_COMMAND="bin/idea.sh:eclipse"
+OPT_PROGS_VERSION_COMMANDS="cat /opt/intellij/build.txt:grep -oP '(?<=version=)[\d.]+' /opt/eclipse/.eclipseproduct"
+DEBIAN_REPOS="https://download.sublimetext.com/ https://download.docker.com/linux/debian"
 
 
 # CONTEST_HOSTS are hosts that should be in /etc/hosts
@@ -18,6 +19,7 @@ JAVA_VERSION="1\.8.*"
 SSH_KEY="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDbdMwSEsgyHJkcaGQuqbUDskZ8KW5IcVBY1ALZ+X8WDhPX2b8ZW2rukxaKoRtLETzmFFuSkmxoHjYTQ2HsrADZ4e9ZPikww+7vgRZmd6fbyZw5QHJRKJ4dSBSgS6E6qniLqxJR9ymFjcXLfVC6UwCKTzpTRUmszKFvClU3d6yDJjWDEYrGCQUorGzcm1cwvamfGsrF16bym9BicZiSzBgHQUYesxksH9pGc4E5XCo3DogrslIRMrId3g4VJM2dz3yz6lN3T5bSTGNfnKl5bZx24zNHmcBt4G93Kn+RB5SRUkZJXPItCr/5hr1uM79m8+mdkLJIq2nYrTUMejgWWSQL TechNICie"
 
 # HIER BEGINT HET SCRIPT
+REPOS_MISSING=""
 PKG_MISSING=""
 EXECUTE_CMD=""
 PACKAGE_SEARCH=""
@@ -30,13 +32,27 @@ echo "████████╗███████╗ ██████╗�
    ╚═╝   ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝ ╚═════╝╚═╝╚══════╝"
 echo "Supergaafe auto checking script"
 
-if [ -z "$1" ]; then
-	COMP="team"
-else
-	COMP=$1
-fi
-echo "Check a $COMP computer"
+echo "Check a team computer"
 echo
+
+# Check if custom debian repo is installed
+function check_debian_repo {
+	REPO_QUERY=$(cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep '^deb ' | grep "$1")
+	if [ -z "$REPO_QUERY" ]; then 
+		REPOS_MISSING+="$1 "
+		echo "[ERROR] Repo '$1' missing!"
+	else
+		echo "Repo '$1' installed"
+	fi
+}
+
+# Check if a list of custom debian repos is installed
+function check_debian_repos {
+	for r in $@
+	do
+		check_debian_repo $r
+	done
+}
 
 # Check if package (wildward allowd) is installed
 function check_pkg {
@@ -129,13 +145,13 @@ function check_udev {
 	fi
 }
 
-# Check if eht0 is set to either auto or allow-hotplug
+# Check if eno1 is set to either auto or allow-hotplug
 function check_network {
-	if [[ $(grep -E "(auto|allow-hotplug) eth0" /etc/network/interfaces) ]]; then
-		echo "Network device eth0 is correctly installed"
+	if [[ $(grep -E "(auto|allow-hotplug) eno1" /etc/network/interfaces) ]]; then
+		echo "Network device eno1 is correctly installed"
 	else
-		EXECUTE_CMD+="echo -e \"\\\nauto eth0\\\niface eth0 inet dhcp\\\n\" >> /etc/network/interfaces\n"
-		echo "[ERROR] Network device eth0 is missing"
+		EXECUTE_CMD+="echo -e \"\\\nauto eno1\\\niface eno1 inet dhcp\\\n\" >> /etc/network/interfaces\n"
+		echo "[ERROR] Network device eno1 is missing"
 	fi
 }
 
@@ -233,6 +249,9 @@ function check_custom_opt_program {
 # Check a team pc
 function check_team {
 	echo "= CHECKING ="
+	echo "=== Custom Debian Repositories ==="
+	check_debian_repos $DEBIAN_REPOS
+
 	echo "=== Window managers ==="
 	check_pkg_list $PKG_WINDOW_MANAGERS
 
@@ -271,37 +290,16 @@ function check_team {
 	check_ssh "$SSH_KEY"
 }
 
-# Check an autojudge
-function check_aj {
-	echo "= CHECKING ="
-	echo "=== Compilers ==="
-	check_pkg_list $PKG_COMPILERS
-
-	echo
-	echo "== Check internet =="
-	check_udev
-	check_network
-
-	echo
-	echo "== Java check =="
-	check_java $JAVA_VERSION
-
-	echo
-	echo "== SSH check =="
-	check_ssh "$SSH_KEY_JORAI"
-	check_ssh "$SSH_KEY_WIM"
-}
-
-if [ "$COMP" == "team" ]; then
-	check_team
-fi
-if [ "$COMP" == "aj" ]; then
-	check_aj
-fi
+check_team
 
 echo
 echo
 echo "= TODO ="
+if [[ $REPOS_MISSING != "" ]]; then
+	for r in $REPOS_MISSING; do
+		echo "Add repo '$r' to apt sources"
+	done
+fi
 if [[ $PKG_MISSING != "" ]]; then
 	echo "sudo apt-get install$PKG_MISSING"
 fi
