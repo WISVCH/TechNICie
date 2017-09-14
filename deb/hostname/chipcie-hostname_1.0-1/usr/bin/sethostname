@@ -1,0 +1,13 @@
+#!/bin/sh
+
+API_HOST="https://chipcie.ch.tudelft.nl"
+API_ENDPOINT="api/hostname"
+
+id=$(wget -q -O - $API_HOST/$API_ENDPOINT)
+
+if echo $id | egrep -q '^[0-9]+$'; then
+	hostname "teampc$id"
+else
+	echo "API response was not a number"
+	exit 1
+fi

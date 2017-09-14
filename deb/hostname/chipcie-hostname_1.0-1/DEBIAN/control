@@ -1,0 +1,8 @@
+Package: chipcie-hostname
+Version: 1.0-1
+Section: base
+Architecture: all
+Depends: wget, coreutils
+Maintainer: TechNICie <technicie@ch.tudelft.nl>
+Description: CHipCie hostname service
+ Service to set hostname based on a server output

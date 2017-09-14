@@ -1,0 +1,8 @@
+Package: chipcie-printer
+Version: 1.0-3
+Section: base
+Architecture: all
+Depends: cups-bsd (>= 1.7.0), wget, coreutils
+Maintainer: TechNICie <technicie@ch.tudelft.nl>
+Description: CHipCie Printer
+ The CHipCie contest printer drivers and configs

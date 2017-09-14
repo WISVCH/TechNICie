@@ -1,0 +1,11 @@
+[Unit]
+Description=Set hostname based on the id from DOMjudge
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/sethostname
+
+[Install]
+WantedBy=multi-user.target
