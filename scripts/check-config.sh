@@ -1,9 +1,9 @@
 #!/bin/bash
 
 PKG_WINDOW_MANAGERS="gnome-shell xfce4 plasma-desktop"
-PKG_COMPILERS="gcc g++ openjdk-8-jdk scala python2.7 python3 mono-devel haskell-platform libghc-*-dev"
+PKG_COMPILERS="gcc g++ openjdk-8-jdk scala python2.7 python3 mono-devel"
 PKG_EDITORS="emacs vim netbeans nano kate gedit geany kwrite kdevelop codeblocks joe sublime-text"
-PKG_OTHERS="flatpak dnsutils cups-bsd konsole make cmake kdbg gdb valgrind kcachegrind perl git screen galculator sdb openssh-server chipcie-hostname chipcie-printer"
+PKG_OTHERS="flatpak dnsutils cups-bsd konsole make cmake kdbg gdb valgrind kcachegrind perl git screen galculator sdb openssh-server pdsh rsync chipcie-hostname chipcie-printer"
 OPT_PROGS_DISPLAY_NAMES="IntelliJ IDEA:Eclipse"
 OPT_PROGS_NAMES="intellij:eclipse"
 OPT_PROGS_BINARY="intellij:eclipse"
