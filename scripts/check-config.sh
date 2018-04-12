@@ -2,15 +2,17 @@
 
 PKG_WINDOW_MANAGERS="gnome-shell xfce4 plasma-desktop"
 PKG_COMPILERS="gcc g++ openjdk-8-jdk scala python2.7 python3 mono-devel haskell-platform libghc-*-dev"
-PKG_EDITORS="emacs vim netbeans monodevelop nano kate gedit geany kwrite kdevelop codeblocks joe sublime-text"
-PKG_OTHERS="dnsutils cups-bsd konsole make cmake kdbg gdb valgrind kcachegrind perl git screen galculator sdb openssh-server"
+PKG_EDITORS="emacs vim netbeans nano kate gedit geany kwrite kdevelop codeblocks joe sublime-text"
+PKG_OTHERS="flatpak dnsutils cups-bsd konsole make cmake kdbg gdb valgrind kcachegrind perl git screen galculator sdb openssh-server chipcie-hostname chipcie-printer"
 OPT_PROGS_DISPLAY_NAMES="IntelliJ IDEA:Eclipse"
 OPT_PROGS_NAMES="intellij:eclipse"
 OPT_PROGS_BINARY="intellij:eclipse"
 OPT_PROGS_COMMAND="bin/idea.sh:eclipse"
 OPT_PROGS_VERSION_COMMANDS="cat /opt/intellij/build.txt:grep -oP '(?<=version=)[\d.]+' /opt/eclipse/.eclipseproduct"
 DEBIAN_REPOS="https://download.sublimetext.com/ https://download.docker.com/linux/debian"
-
+PKG_FLATPAK="com.xamarin.MonoDevelop"
+PKG_FLATPAK_REF="https://download.mono-project.com/repo/monodevelop.flatpakref"
+PKG_FLATPAK_DISPLAY_NAMES="MonoDevelop"
 
 # CONTEST_HOSTS are hosts that should be in /etc/hosts
 CONTEST_HOSTS="chipcie.ch.tudelft.nl"
@@ -246,6 +248,38 @@ function check_custom_opt_program {
 	fi
 }
 
+# Check programs installed using flatpak 
+# $1: flatpak package names
+# $2: flatpakref urls
+# $3: package display names
+function check_flatpak_list {
+	if [ ! -f "$(which flatpak)" ]; then
+		echo "[ERROR] flatpak is not installed, checking for flatpack programs skipped"
+		return
+	fi
+
+	pkgs=($1)
+	urls=($2)
+	display=($3)
+	amount=${#pkgs[@]}
+	for ((i=0; i<amount; i++)); do
+		check_flatpak_program "${pkgs[$i]}" "${urls[$i]}" "${display[$i]}"
+	done
+}
+
+# Check program installed using flatpak 
+# $1: flatpak package name
+# $2: flatpakref url
+# $3: package display name
+function check_flatpak_program {
+	if flatpak info "$1"; then
+		echo "$3: $(flatpak info "$1" -r)"
+	else
+		echo "[ERROR] flatpack package '$3' is not installed"
+		EXECUTE_CMD+="flatpak install --from=$2\n"
+	fi
+}
+
 # Check a team pc
 function check_team {
 	echo "= CHECKING ="
@@ -270,6 +304,10 @@ function check_team {
 	echo
 	echo "=== Opt Programs ==="
 	check_custom_opt_programs "$OPT_PROGS_NAMES" "$OPT_PROGS_BINARY" "$OPT_PROGS_COMMAND" "$OPT_PROGS_VERSION_COMMANDS" "$OPT_PROGS_DISPLAY_NAMES"
+
+	echo
+	echo "=== Flatpak Programs =="
+	check_flatpak_list "$PKG_FLATPAK" "$PKG_FLATPAK_REF" "$PKG_FLATPAK_DISPLAY_NAMES"
 
 	echo
 	echo "== Check internet =="
