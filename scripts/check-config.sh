@@ -39,7 +39,7 @@ echo
 
 # Check if custom debian repo is installed
 function check_debian_repo {
-	REPO_QUERY=$(cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list | grep '^deb ' | grep "$1")
+	REPO_QUERY=$(cat /etc/apt/sources.list /etc/apt/sources.list.d/*.list 2>/dev/null | grep '^deb ' | grep "$1")
 	if [ -z "$REPO_QUERY" ]; then 
 		REPOS_MISSING+="$1 "
 		echo "[ERROR] Repo '$1' missing!"
@@ -112,13 +112,13 @@ function check_contest_hosts {
 			else
 				echo "[ERROR] $host present in /etc/hosts, but as ${search_res[0]} instead of detected $expected"
 				search_format=$(echo "${search_res[*]}" | sed 's/\./\\./g' | sed 's/ /\\\\t/g')
-				EXECUTE_CMD+="sudo sed -i 's/$search_format/$expected\\\\t$host/g' /etc/hosts\n"
+				EXECUTE_CMD+="sed -i 's/$search_format/$expected\\\\t$host/g' /etc/hosts\n"
 
 			fi
 		else
 			echo "[ERROR] $host missing from /etc/hosts"
 			[ "$offline" == true ] && expected="<insert ip>"
-			EXECUTE_CMD+="echo -e \"\\\\n${expected}\\\\t${host}\" | sudo tee -a /etc/hosts\n"
+			EXECUTE_CMD+="echo -e \"\\\\n${expected}\\\\t${host}\" >> /etc/hosts\n"
 		fi		
 	done
 }
@@ -127,7 +127,7 @@ function check_contest_hosts {
 function check_udev {
 	# Check if persistent rules exist before next boot
 	if [ -f /etc/udev/rules.d/70-persistent-net.rules ]; then
-		EXECUTE_CMD+="sudo rm /etc/udev/rules.d/70-persistent-net.rules\n"
+		EXECUTE_CMD+="rm /etc/udev/rules.d/70-persistent-net.rules\n"
 		echo "[ERROR] UDEV rules not cleared!"
 	else
 		echo "No udev rule found for next startup"
@@ -136,20 +136,20 @@ function check_udev {
 	# Check if regeneration of persistent rules is blocked
 	if [ -f /etc/udev/rules.d/75-persistent-net-generator.rules ]; then
 		if [ -s /etc/udev/rules.d/75-persistent-net-generator.rules ]; then
-			EXECUTE_CMD+="sudo cat /dev/null > /etc/udev/rules.d/75-persistent-net-generator.rules\n"
+			EXECUTE_CMD+="cat /dev/null > /etc/udev/rules.d/75-persistent-net-generator.rules\n"
 			echo "[ERROR] The persistent net genrator is not cleared! (needs to be empty)"
 		else
 			echo "The udev rules aren't generated anymore"
 		fi
 	else
-		EXECUTE_CMD+="sudo cat /dev/null > /etc/udev/rules.d/75-persistent-net-generator.rules\n"
+		EXECUTE_CMD+="cat /dev/null > /etc/udev/rules.d/75-persistent-net-generator.rules\n"
 		echo "[ERROR] The persistent net generator doesn't exist!"
 	fi
 }
 
 # Check if eno1 is set to either auto or allow-hotplug
 function check_network {
-	if [[ $(grep -E "(auto|allow-hotplug) eno1" /etc/network/interfaces) ]]; then
+	if [[ $(grep -E "(auto|allow-hotplug) eno1" /etc/network/interfaces 2>/dev/null) ]]; then
 		echo "Network device eno1 is correctly installed"
 	else
 		EXECUTE_CMD+="echo -e \"\\\nauto eno1\\\niface eno1 inet dhcp\\\n\" >> /etc/network/interfaces\n"
@@ -199,7 +199,7 @@ function check_ssh {
 		fi
 	else
 		echo "[ERROR] No SSH key set!"
-		EXECUTE_CMD+="echo \"$@\" >> /root/.ssh/authorized_keys\n"
+		EXECUTE_CMD+="mkdir /root/.ssh/\ntouch /root/.ssh/authorized_keys\necho \"$@\" >> /root/.ssh/authorized_keys\n"
 	fi
 }
 
@@ -234,7 +234,7 @@ function check_custom_opt_programs {
 # $4: version check command
 # $5: package display name
 function check_custom_opt_program {
-	if [ -f "$(which $2)" ]; then
+	if [ -f "$(which $2 2>/dev/null)" ]; then
 		PACKAGE_VERSION=$(eval $4)
 		echo "$5: $PACKAGE_VERSION"
 	else
@@ -253,7 +253,7 @@ function check_custom_opt_program {
 # $2: flatpakref urls
 # $3: package display names
 function check_flatpak_list {
-	if [ ! -f "$(which flatpak)" ]; then
+	if [ ! -f "$(which flatpak 2>/dev/null)" ]; then
 		echo "[ERROR] flatpak is not installed, checking for flatpack programs skipped"
 		return
 	fi
@@ -272,11 +272,11 @@ function check_flatpak_list {
 # $2: flatpakref url
 # $3: package display name
 function check_flatpak_program {
-	if flatpak info "$1"; then
+	if flatpak info "$1" >/dev/null 2>&1; then
 		echo "$3: $(flatpak info "$1" -r)"
 	else
 		echo "[ERROR] flatpack package '$3' is not installed"
-		EXECUTE_CMD+="flatpak install --from=$2\n"
+		EXECUTE_CMD+="flatpak install --from $2\n"
 	fi
 }
 
@@ -339,7 +339,7 @@ if [[ $REPOS_MISSING != "" ]]; then
 	done
 fi
 if [[ $PKG_MISSING != "" ]]; then
-	echo "sudo apt-get install$PKG_MISSING"
+	echo "apt install$PKG_MISSING"
 fi
 
 if [[ $EXECUTE_CMD != "" ]]; then
