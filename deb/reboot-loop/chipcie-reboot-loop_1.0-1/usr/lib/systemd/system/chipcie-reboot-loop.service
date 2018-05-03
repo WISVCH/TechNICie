@@ -1,0 +1,9 @@
+[Unit]
+Description=Reboots unit instantly
+
+[Service]
+ExecStart=/bin/systemctl reboot 
+
+[Install]
+WantedBy=multi-user.target
+

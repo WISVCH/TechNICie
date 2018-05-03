@@ -1,0 +1,8 @@
+Package: chipcie-reboot-loop
+Version: 1.0-1
+Section: base
+Architecture: all
+Depends: coreutils
+Maintainer: TechNICie <technicie@ch.tudelft.nl>
+Description: CHipCie reboot loop systemd service
+ Systemd service to put machines into reboot-loop for garantueed re-imaging
