@@ -1,0 +1,10 @@
+[Unit]
+Description=CUPS LPD Server
+Documentation=man:cups-lpd(8)
+
+[Service]
+ExecStart=/usr/lib/cups/daemon/cups-lpd
+StandardInput=socket
+
+[Install]
+WantedBy=multi-user.target
