@@ -1,8 +1,8 @@
 Package: chipcie-print-server
-Version: 1.0-2
+Version: 1.1-1
 Section: base
 Architecture: all
 Depends: cups (>= 1.7.0), cups-bsd (>= 1.7.0)
 Maintainer: TechNICie <technicie@ch.tudelft.nl>
 Description: CHipCie Print Server
- The CHipCie contest print server driver, configs and cups-lpd systemd socket service
+ The CHipCie contest print server driver and configs
