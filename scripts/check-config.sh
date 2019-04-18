@@ -3,7 +3,7 @@
 PKG_WINDOW_MANAGERS="gnome-shell"
 PKG_COMPILERS="gcc g++ openjdk-11-jdk scala python2.7 python3 mono-devel"
 PKG_EDITORS="emacs vim vim-gtk3 nano kate gedit geany codeblocks sublime-text"
-PKG_OTHERS="flatpak dnsutils cups-bsd konsole make cmake kdbg gdb valgrind kcachegrind perl git screen galculator sdb openssh-server pdsh rsync docker-ce docker-ce-cli containerd.io chipcie-hostname chipcie-printer"
+PKG_OTHERS="lightdm lightdm-gtk-greeter flatpak dnsutils cups-bsd konsole make cmake kdbg gdb valgrind kcachegrind perl git screen galculator sdb openssh-server pdsh rsync docker-ce docker-ce-cli containerd.io chipcie-hostname chipcie-printer"
 PKG_ICPC="icpc-clion icpc-eclipse icpc-intellij-idea icpc-pycharm icpc2019-jetbrains"
 #OPT_PROGS_DISPLAY_NAMES="IntelliJ IDEA:PyCharm:Eclipse"
 #OPT_PROGS_NAMES="intellij:pycharm:eclipse"
