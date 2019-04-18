@@ -1,14 +1,15 @@
 #!/bin/bash
 
 PKG_WINDOW_MANAGERS="gnome-shell"
-PKG_COMPILERS="gcc g++ openjdk-8-jdk scala python2.7 python3 mono-devel"
-PKG_EDITORS="emacs vim gvim nano kate gedit geany codeblocks sublime-text"
-PKG_OTHERS="flatpak dnsutils cups-bsd konsole make cmake kdbg gdb valgrind kcachegrind perl git screen galculator sdb openssh-server pdsh rsync chipcie-hostname chipcie-printer"
-OPT_PROGS_DISPLAY_NAMES="IntelliJ IDEA:PyCharm:Eclipse"
-OPT_PROGS_NAMES="intellij:pycharm:eclipse"
-OPT_PROGS_BINARY="intellij:pycharm:eclipse"
-OPT_PROGS_COMMAND="bin/idea.sh:bin/pycharm.sh:eclipse"
-OPT_PROGS_VERSION_COMMANDS="cat /opt/intellij/build.txt:cat /opt/pycharm/build.txt:grep -oP '(?<=version=)[\d.]+' /opt/eclipse/.eclipseproduct"
+PKG_COMPILERS="gcc g++ openjdk-11-jdk scala python2.7 python3 mono-devel"
+PKG_EDITORS="emacs vim vim-gtk3 nano kate gedit geany codeblocks sublime-text"
+PKG_OTHERS="flatpak dnsutils cups-bsd konsole make cmake kdbg gdb valgrind kcachegrind perl git screen galculator sdb openssh-server pdsh rsync docker-ce docker-ce-cli containerd.io chipcie-hostname chipcie-printer"
+PKG_ICPC="icpc-clion icpc-eclipse icpc-intellij-idea icpc-pycharm icpc2019-jetbrains"
+#OPT_PROGS_DISPLAY_NAMES="IntelliJ IDEA:PyCharm:Eclipse"
+#OPT_PROGS_NAMES="intellij:pycharm:eclipse"
+#OPT_PROGS_BINARY="intellij:pycharm:eclipse"
+#OPT_PROGS_COMMAND="bin/idea.sh:bin/pycharm.sh:eclipse"
+#OPT_PROGS_VERSION_COMMANDS="cat /opt/intellij/build.txt:cat /opt/pycharm/build.txt:grep -oP '(?<=version=)[\d.]+' /opt/eclipse/.eclipseproduct"
 DEBIAN_REPOS="https://download.sublimetext.com/ https://download.docker.com/linux/debian"
 PKG_FLATPAK="com.xamarin.MonoDevelop"
 PKG_FLATPAK_REF="https://download.mono-project.com/repo/monodevelop.flatpakref"
@@ -17,7 +18,7 @@ PKG_FLATPAK_DISPLAY_NAMES="MonoDevelop"
 # CONTEST_HOSTS are hosts that should be in /etc/hosts
 CONTEST_HOSTS="chipcie.ch.tudelft.nl"
 
-JAVA_VERSION="1\.8.*"
+JAVA_VERSION="11\.*"
 SSH_KEY="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDbdMwSEsgyHJkcaGQuqbUDskZ8KW5IcVBY1ALZ+X8WDhPX2b8ZW2rukxaKoRtLETzmFFuSkmxoHjYTQ2HsrADZ4e9ZPikww+7vgRZmd6fbyZw5QHJRKJ4dSBSgS6E6qniLqxJR9ymFjcXLfVC6UwCKTzpTRUmszKFvClU3d6yDJjWDEYrGCQUorGzcm1cwvamfGsrF16bym9BicZiSzBgHQUYesxksH9pGc4E5XCo3DogrslIRMrId3g4VJM2dz3yz6lN3T5bSTGNfnKl5bZx24zNHmcBt4G93Kn+RB5SRUkZJXPItCr/5hr1uM79m8+mdkLJIq2nYrTUMejgWWSQL TechNICie"
 
 # HIER BEGINT HET SCRIPT
@@ -98,6 +99,21 @@ function check_pkg_list {
 	done
 }
 
+# Check if an icpc package list is installed and if the icpc repo is available
+function check_icpc_pkg_list {
+	icpc_pkgs=$(apt-cache search icpc | wc -l)
+	# If we can't find any installable icpc packages say we need to add the ICPC repo or do an apt-get update first
+	if [[ $icpc_pkgs -lt 1 ]]; then
+		echo "[ERROR] No installable ICPC packages found, either the ICPC repo is not added or you need to run '$ apt-get update' first"
+		REPOS_MISSING+="ICPC_PC^2 "
+	else
+		for p in $@
+		do
+			check_pkg $p
+		done
+	fi
+}
+
 # Check if hosts rule for contest server is defined in /etc/hosts
 function check_contest_hosts {
 	for host in $@
@@ -154,16 +170,6 @@ function check_network {
 	else
 		EXECUTE_CMD+="echo -e \"\\\nauto eno1\\\niface eno1 inet dhcp\\\n\" >> /etc/network/interfaces\n"
 		echo "[ERROR] Network device eno1 is missing"
-	fi
-}
-
-# Check if cups is setup corectly (printing)
-function check_cups {
-	if [ -f /etc/cups/client.conf ]; then
-		echo "CUPS server address: `cat /etc/cups/client.conf | cut -f2`"
-	else
-		EXECUTE_CMD+="echo \"ServerName $SERVER_IP\" > /etc/cups/client.conf\n"
-		echo "[ERROR] CUPS server address not defined!"
 	fi
 }
 
@@ -302,8 +308,12 @@ function check_team {
 	check_pkg_list $PKG_OTHERS
 
 	echo
-	echo "=== Opt Programs ==="
-	check_custom_opt_programs "$OPT_PROGS_NAMES" "$OPT_PROGS_BINARY" "$OPT_PROGS_COMMAND" "$OPT_PROGS_VERSION_COMMANDS" "$OPT_PROGS_DISPLAY_NAMES"
+	echo "=== ICPC Packages ==="
+	check_icpc_pkg_list $PKG_ICPC
+
+	#echo
+	#echo "=== Opt Programs ==="
+	#check_custom_opt_programs "$OPT_PROGS_NAMES" "$OPT_PROGS_BINARY" "$OPT_PROGS_COMMAND" "$OPT_PROGS_VERSION_COMMANDS" "$OPT_PROGS_DISPLAY_NAMES"
 
 	echo
 	echo "=== Flatpak Programs =="
@@ -314,10 +324,6 @@ function check_team {
 	check_udev
 	check_network
 	check_contest_hosts $CONTEST_HOSTS
-
-	#echo
-	#echo "== CUPS (printer) =="
-	#check_cups
 
 	echo
 	echo "== Java check =="
