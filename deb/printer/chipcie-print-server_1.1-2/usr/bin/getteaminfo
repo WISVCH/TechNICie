@@ -1,0 +1,5 @@
+#!/bin/bash
+
+local_ip=`hostname -I`
+team_name=`wget -q -O - https://chipcie.ch.tudelft.nl/api/v4/team?ip=$local_ip | cut -d "\"" -f 2`
+echo $team_name

@@ -1,5 +1,5 @@
 Package: chipcie-print-server
-Version: 1.1-1
+Version: 1.1-2
 Section: base
 Architecture: all
 Depends: cups (>= 1.7.0), cups-bsd (>= 1.7.0)

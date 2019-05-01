@@ -1,0 +1,52 @@
+#!/usr/bin/perl 
+
+ use IO::Handle;
+
+#open (MYFILE, '>>/tmp/data.txt');
+#print MYFILE @ARGV;
+#close (MYFILE);
+
+ # Check the arguments
+ #
+ die ("ERROR: wrong number of arguments\n") if (scalar @ARGV < 5);
+
+ $jobid = $username = $title = $copies = $options = undef;
+ $jobid = shift;                # Job ID
+ $username = shift;             # Job requesting user name
+ $title = shift;                # Job title
+ $copies = shift;               # Number of requested copies
+ $options = shift;              # Textual representation of job attributes
+ $psfile = shift;               # read from file ?
+
+
+ #
+ # Normalize options string
+ #
+ $options =~ s/^\s+//;
+ $options =~ s/\s+$//;
+ $options = ' ' . $options . ' ';
+
+ #
+ # Check from where to read
+ #
+ if (defined $psfile)
+ {
+  open (FILI, "<$psfile") || die ("ERROR: $psfile: $!\n");
+}
+ else
+{
+ open (FILI, "<&STDIN") || die ("ERROR: STDIN: $!\n");
+}
+
+# STDOUT->autoflush (1);
+   
+while (<FILI>) {
+     print MYFILE $_;
+     if (/% HOSTNAME: (.*)/) {
+	print "  (";
+	print `/usr/bin/getteaminfo $1`;
+	print ") show          % inserted by hostfilter looking for $1\n";
+     } else {
+         print STDOUT;
+ }
+ }
