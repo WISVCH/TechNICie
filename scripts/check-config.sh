@@ -2,18 +2,15 @@
 
 PKG_WINDOW_MANAGERS="gnome-shell"
 PKG_COMPILERS="gcc g++ openjdk-11-jdk scala python2.7 python3 mono-devel"
-PKG_EDITORS="emacs vim vim-gtk3 nano kate gedit geany codeblocks sublime-text"
-PKG_OTHERS="lightdm lightdm-gtk-greeter flatpak dnsutils cups-bsd konsole make cmake kdbg gdb valgrind kcachegrind perl git screen galculator sdb openssh-server pdsh rsync docker-ce docker-ce-cli containerd.io nftables chipcie-hostname chipcie-printer"
+PKG_EDITORS="emacs vim vim-gtk3 nano kate gedit geany codeblocks sublime-text monodevelop"
+PKG_OTHERS="lightdm lightdm-gtk-greeter dnsutils cups-bsd konsole make cmake kdbg gdb valgrind kcachegrind perl git screen galculator sdb openssh-server pdsh rsync docker-ce docker-ce-cli containerd.io nftables chipcie-hostname chipcie-printer"
 PKG_ICPC="icpc-clion icpc-eclipse icpc-intellij-idea icpc-pycharm icpc2019-jetbrains"
 #OPT_PROGS_DISPLAY_NAMES="IntelliJ IDEA:PyCharm:Eclipse"
 #OPT_PROGS_NAMES="intellij:pycharm:eclipse"
 #OPT_PROGS_BINARY="intellij:pycharm:eclipse"
 #OPT_PROGS_COMMAND="bin/idea.sh:bin/pycharm.sh:eclipse"
 #OPT_PROGS_VERSION_COMMANDS="cat /opt/intellij/build.txt:cat /opt/pycharm/build.txt:grep -oP '(?<=version=)[\d.]+' /opt/eclipse/.eclipseproduct"
-DEBIAN_REPOS="https://download.sublimetext.com/ https://download.docker.com/linux/debian"
-PKG_FLATPAK="com.xamarin.MonoDevelop"
-PKG_FLATPAK_REF="https://download.mono-project.com/repo/monodevelop.flatpakref"
-PKG_FLATPAK_DISPLAY_NAMES="MonoDevelop"
+DEBIAN_REPOS="https://download.sublimetext.com/ https://download.docker.com/linux/debian https://download.mono-project.com/repo/debian"
 
 # CONTEST_HOSTS are hosts that should be in /etc/hosts
 CONTEST_HOSTS="chipcie.ch.tudelft.nl"
@@ -139,40 +136,6 @@ function check_contest_hosts {
 	done
 }
 
-# Check if udev rules for internet aren't available and aren't generated anymore
-function check_udev {
-	# Check if persistent rules exist before next boot
-	if [ -f /etc/udev/rules.d/70-persistent-net.rules ]; then
-		EXECUTE_CMD+="rm /etc/udev/rules.d/70-persistent-net.rules\n"
-		echo "[ERROR] UDEV rules not cleared!"
-	else
-		echo "No udev rule found for next startup"
-	fi
-
-	# Check if regeneration of persistent rules is blocked
-	if [ -f /etc/udev/rules.d/75-persistent-net-generator.rules ]; then
-		if [ -s /etc/udev/rules.d/75-persistent-net-generator.rules ]; then
-			EXECUTE_CMD+="cat /dev/null > /etc/udev/rules.d/75-persistent-net-generator.rules\n"
-			echo "[ERROR] The persistent net genrator is not cleared! (needs to be empty)"
-		else
-			echo "The udev rules aren't generated anymore"
-		fi
-	else
-		EXECUTE_CMD+="cat /dev/null > /etc/udev/rules.d/75-persistent-net-generator.rules\n"
-		echo "[ERROR] The persistent net generator doesn't exist!"
-	fi
-}
-
-# Check if eno1 is set to either auto or allow-hotplug
-function check_network {
-	if [[ $(grep -E "(auto|allow-hotplug) eno1" /etc/network/interfaces 2>/dev/null) ]]; then
-		echo "Network device eno1 is correctly installed"
-	else
-		EXECUTE_CMD+="echo -e \"\\\nauto eno1\\\niface eno1 inet dhcp\\\n\" >> /etc/network/interfaces\n"
-		echo "[ERROR] Network device eno1 is missing"
-	fi
-}
-
 # Check if java is the correct version
 function check_java {
 	# Check current java and javac versions
@@ -254,38 +217,6 @@ function check_custom_opt_program {
 	fi
 }
 
-# Check programs installed using flatpak 
-# $1: flatpak package names
-# $2: flatpakref urls
-# $3: package display names
-function check_flatpak_list {
-	if [ ! -f "$(which flatpak 2>/dev/null)" ]; then
-		echo "[ERROR] flatpak is not installed, checking for flatpack programs skipped"
-		return
-	fi
-
-	pkgs=($1)
-	urls=($2)
-	display=($3)
-	amount=${#pkgs[@]}
-	for ((i=0; i<amount; i++)); do
-		check_flatpak_program "${pkgs[$i]}" "${urls[$i]}" "${display[$i]}"
-	done
-}
-
-# Check program installed using flatpak 
-# $1: flatpak package name
-# $2: flatpakref url
-# $3: package display name
-function check_flatpak_program {
-	if flatpak info "$1" >/dev/null 2>&1; then
-		echo "$3: $(flatpak info "$1" -r)"
-	else
-		echo "[ERROR] flatpack package '$3' is not installed"
-		EXECUTE_CMD+="flatpak install --from $2\n"
-	fi
-}
-
 # Check a team pc
 function check_team {
 	echo "= CHECKING ="
@@ -316,13 +247,7 @@ function check_team {
 	#check_custom_opt_programs "$OPT_PROGS_NAMES" "$OPT_PROGS_BINARY" "$OPT_PROGS_COMMAND" "$OPT_PROGS_VERSION_COMMANDS" "$OPT_PROGS_DISPLAY_NAMES"
 
 	echo
-	echo "=== Flatpak Programs =="
-	check_flatpak_list "$PKG_FLATPAK" "$PKG_FLATPAK_REF" "$PKG_FLATPAK_DISPLAY_NAMES"
-
-	echo
 	echo "== Check internet =="
-	check_udev
-	check_network
 	check_contest_hosts $CONTEST_HOSTS
 
 	echo
